@@ -1,27 +1,27 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const data = [
-  { time: "Now", value: 65 },
-  { time: "1h", value: 75 },
-  { time: "2h", value: 45 },
-  { time: "3h", value: 30 },
+  { time: "現在", value: 65 },
+  { time: "1時間後", value: 75 },
+  { time: "2時間後", value: 45 },
+  { time: "3時間後", value: 30 },
 ];
 
 const OccupancyChart = () => {
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
-      <h3 className="text-sm font-medium text-white/70 mb-4">Occupancy Trend</h3>
+      <h3 className="text-sm font-medium text-gym-text/70 mb-4">混雑度の推移</h3>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <XAxis 
             dataKey="time" 
-            stroke="#ffffff50"
+            stroke="#00000050"
             fontSize={12}
             tickLine={false}
             axisLine={false}
           />
           <YAxis 
-            stroke="#ffffff50"
+            stroke="#00000050"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -29,18 +29,18 @@ const OccupancyChart = () => {
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: "#1A1F2C",
-              border: "1px solid rgba(255,255,255,0.1)",
+              backgroundColor: "#FFFFFF",
+              border: "1px solid rgba(0,0,0,0.1)",
               borderRadius: "8px",
             }}
-            labelStyle={{ color: "#fff" }}
+            labelStyle={{ color: "#000" }}
           />
           <Line 
             type="monotone" 
             dataKey="value" 
-            stroke="#0EA5E9"
+            stroke="#FF5733"
             strokeWidth={2}
-            dot={{ fill: "#0EA5E9", strokeWidth: 2 }}
+            dot={{ fill: "#FF5733", strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

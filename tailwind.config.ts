@@ -53,10 +53,13 @@ export default {
           foreground: 'hsl(var(--card-foreground))'
         },
         gym: {
-          bg: '#1A1F2C',
-          accent: '#0EA5E9',
-          warning: '#F97316',
-          card: 'rgba(255, 255, 255, 0.1)',
+          bg: '#FFFFFF',
+          text: '#000000',
+          accent1: '#FF5733',
+          accent2: '#C70039',
+          button: '#900C3F',
+          link: '#581845',
+          card: 'rgba(0, 0, 0, 0.05)',
         }
       },
       borderRadius: {
