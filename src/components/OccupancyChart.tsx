@@ -5,6 +5,9 @@ const generateTimeData = () => {
   const now = new Date();
   const data = [];
   
+  // 現在時刻の時間を切り捨てて、00分に設定
+  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
+
   for (let i = 0; i <= 12; i++) { // 3時間分（15分×12）
     const time = new Date(now.getTime() + i * 15 * 60000);
     const hours = time.getHours().toString().padStart(2, '0');
@@ -35,10 +38,10 @@ const OccupancyChart = () => {
             fontSize={10}
             tickLine={false}
             axisLine={false}
-            interval={4}  // 1時間おきに表示
-            angle={-45}
-            textAnchor="end"
-            height={60}
+            interval={3}  // 1時間おきに表示（15分×4）
+            angle={0}     // 傾きを直す
+            textAnchor="middle"
+            height={40}
           />
           <YAxis 
             stroke="#00000050"
