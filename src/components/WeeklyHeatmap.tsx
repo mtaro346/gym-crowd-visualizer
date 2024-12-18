@@ -4,9 +4,11 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 // 仮のデータ生成関数（後でAPIから取得するデータに置き換え可能）
 const generateWeeklyData = () => {
   const days = ['月', '火', '水', '木', '金', '土', '日'];
-  const hours = Array.from({ length: 24 }, (_, i) => 
-    `${String(i).padStart(2, '0')}:00`
-  );
+  const hours = Array.from({ length: 24 * 4 }, (_, i) => {
+    const hour = Math.floor(i / 4);
+    const minute = (i % 4) * 15;
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  });
   
   const data = days.map(day => ({
     day,
@@ -45,15 +47,15 @@ const WeeklyHeatmap = () => {
       </button>
 
       {isExpanded && (
-        <div className="mt-4 overflow-x-auto">
-          <div className="min-w-[600px]">
-            <div className="grid grid-cols-[auto_repeat(24,1fr)] gap-1">
+        <div className="mt-4 overflow-x-auto scrollbar-hide">
+          <div className="min-w-[900px]">
+            <div className="grid grid-cols-[auto_repeat(96,1fr)] gap-[2px]">
               {/* 時間のヘッダー */}
               <div className="h-6" /> {/* 空のセル */}
               {Array.from({ length: 24 }, (_, i) => (
                 <div
                   key={i}
-                  className="text-xs text-gym-text/50 text-center"
+                  className="text-xs text-gym-text/50 text-center col-span-4"
                 >
                   {`${String(i).padStart(2, '0')}`}
                 </div>
@@ -62,13 +64,13 @@ const WeeklyHeatmap = () => {
               {/* 曜日ごとのデータ */}
               {weeklyData.map((dayData) => (
                 <React.Fragment key={dayData.day}>
-                  <div className="text-sm text-gym-text/70 pr-2">
+                  <div className="text-sm text-gym-text/70 pr-2 flex items-center">
                     {dayData.day}
                   </div>
                   {dayData.hours.map((hourData, index) => (
                     <div
                       key={index}
-                      className={`h-6 rounded-sm transition-colors ${getOccupancyColor(
+                      className={`h-6 transition-colors ${getOccupancyColor(
                         hourData.occupancy
                       )}`}
                       title={`${dayData.day} ${hourData.hour}: ${hourData.occupancy}%`}
