@@ -24,18 +24,20 @@ export default {
         ring: 'hsl(var(--ring))',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        'gym-bg': '#FFFFFF',  // 追加
+        'gym-text': '#000000', // 追加
         primary: {
-          DEFAULT: '#315a8d', // プライマリーカラー
+          DEFAULT: '#315a8d',
           light: '#6ab8dd',
           dark: '#003c7e',
         },
         secondary: {
-          DEFAULT: '#909090', // セカンダリーカラー（グレー）
+          DEFAULT: '#909090',
           light: '#c0c0c0',
           dark: '#303030',
         },
         accent: {
-          DEFAULT: '#ef4e3f', // アクセントカラー（赤）
+          DEFAULT: '#ef4e3f',
           light: '#f69a91',
           dark: '#b23a2f',
         },
