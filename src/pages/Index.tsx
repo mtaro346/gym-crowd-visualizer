@@ -36,7 +36,7 @@ const Index = () => {
       </div>
       
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold text-lifefit-blue-400">ジム混雑状況</h1>
+        <h1 className="text-xl font-bold text-lifefit-blue-400">フリーウェイトエリア混雑状況</h1>
         <div className="flex items-center">
           <Lottie 
             options={{
@@ -47,8 +47,8 @@ const Index = () => {
                 preserveAspectRatio: 'xMidYMid slice'
               }
             }}
-            height={30}
-            width={30}
+            height={25}
+            width={25}
           />
           <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
         </div>

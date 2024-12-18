@@ -1,4 +1,4 @@
-import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import Lottie from "react-lottie";
 import animationData from "../../public/animations/Animation - 1734516359433.json";
 
@@ -31,7 +31,7 @@ const data = generateTimeData();
 const OccupancyChart = () => {
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
-      <div className="flex items-center gap-1 mb-2">
+      <div className="flex items-center">
         <h3 className="text-sm font-medium text-gym-text/70">今後の混雑予想</h3>
         <div className="-mt-1">
           <Lottie 
@@ -50,12 +50,13 @@ const OccupancyChart = () => {
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
+          <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="time" 
             stroke="#00000050"
             fontSize={10}
-            tickLine={false}
-            axisLine={false}
+            tickLine={true}
+            axisLine={true}
             interval={3}  // 1時間おきに表示（15分×4）
             angle={0}     // 傾きを直す
             textAnchor="middle"
@@ -64,9 +65,10 @@ const OccupancyChart = () => {
           <YAxis 
             stroke="#00000050"
             fontSize={12}
-            tickLine={false}
-            axisLine={false}
+            tickLine={true}
+            axisLine={true}
             tickFormatter={(value) => `${value}%`}
+            domain={[0, 100]}
           />
           <Tooltip
             contentStyle={{
@@ -79,9 +81,9 @@ const OccupancyChart = () => {
           <Line 
             type="monotone" 
             dataKey="value" 
-            stroke="#FF5733"
+            stroke="#ff6f61"
             strokeWidth={2}
-            dot={{ fill: "#FF5733", strokeWidth: 2 }}
+            dot={{ fill: "#ff6f61", strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>
