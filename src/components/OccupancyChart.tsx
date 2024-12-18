@@ -2,21 +2,18 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianG
 import Lottie from "react-lottie";
 import animationData from "../../public/animations/Animation - 1734516359433.json";
 
-// 現在時刻から15分間隔のデータを生成
 const generateTimeData = () => {
   const now = new Date();
   const data = [];
   
-  // 現在時刻の時間を切り捨てて、00分に設定
   now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
 
-  for (let i = 0; i <= 12; i++) { // 3時間分（15分×12）
+  for (let i = 0; i <= 12; i++) {
     const time = new Date(now.getTime() + i * 15 * 60000);
     const hours = time.getHours().toString().padStart(2, '0');
     const minutes = time.getMinutes().toString().padStart(2, '0');
     const timeString = `${hours}:${minutes}`;
     
-    // 仮のデータ（本来はAPIから取得）
     const values = [65, 68, 70, 72, 75, 70, 65, 55, 45, 40, 35, 32, 30];
     data.push({
       time: timeString,
@@ -31,7 +28,7 @@ const data = generateTimeData();
 const OccupancyChart = () => {
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
-      <div className="flex items-center">
+      <div className="flex items-center gap-1 mb-2">
         <h3 className="text-sm font-medium text-gym-text/70">今後の混雑予想</h3>
         <div className="-mt-1">
           <Lottie 
@@ -57,8 +54,8 @@ const OccupancyChart = () => {
             fontSize={10}
             tickLine={true}
             axisLine={true}
-            interval={3}  // 1時間おきに表示（15分×4）
-            angle={0}     // 傾きを直す
+            interval={3}
+            angle={0}
             textAnchor="middle"
             height={40}
           />
@@ -69,6 +66,7 @@ const OccupancyChart = () => {
             axisLine={true}
             tickFormatter={(value) => `${value}%`}
             domain={[0, 100]}
+            ticks={[0, 20, 40, 60, 80, 100]} // 明示的にticksを指定
           />
           <Tooltip
             contentStyle={{
@@ -83,7 +81,20 @@ const OccupancyChart = () => {
             dataKey="value" 
             stroke="#ff6f61"
             strokeWidth={2}
-            dot={{ fill: "#ff6f61", strokeWidth: 2 }}
+            dot={{ 
+              fill: "#ff6f61", 
+              strokeWidth: 2,
+              r: 4, // ドットのサイズを大きく
+              stroke: "#ff6f61",
+              fillOpacity: 1 // 不透明度を1に設定
+            }}
+            activeDot={{
+              r: 6,
+              stroke: "#ff6f61",
+              strokeWidth: 2,
+              fill: "#ff6f61",
+              fillOpacity: 1
+            }}
           />
         </LineChart>
       </ResponsiveContainer>
