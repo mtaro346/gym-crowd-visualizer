@@ -31,20 +31,22 @@ const data = generateTimeData();
 const OccupancyChart = () => {
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
-      <div className="flex items-center mb-4">
+      <div className="flex items-center gap-1 mb-2">
         <h3 className="text-sm font-medium text-gym-text/70">今後の混雑予想</h3>
-        <Lottie 
-          options={{
-            loop: true,
-            autoplay: true,
-            animationData: animationData,
-            rendererSettings: {
-              preserveAspectRatio: 'xMidYMid slice'
-            }
-          }}
-          height={40}
-          width={40}
-        />
+        <div className="-mt-1">
+          <Lottie 
+            options={{
+              loop: true,
+              autoplay: true,
+              animationData: animationData,
+              rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice'
+              }
+            }}
+            height={40}
+            width={40}
+          />
+        </div>
       </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
