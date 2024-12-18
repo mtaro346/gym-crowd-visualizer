@@ -1,21 +1,27 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
-// 15分間隔のデータ
-const data = [
-  { time: "現在", value: 65 },
-  { time: "15分後", value: 68 },
-  { time: "30分後", value: 70 },
-  { time: "45分後", value: 72 },
-  { time: "1時間後", value: 75 },
-  { time: "1時間15分後", value: 70 },
-  { time: "1時間30分後", value: 65 },
-  { time: "1時間45分後", value: 55 },
-  { time: "2時間後", value: 45 },
-  { time: "2時間15分後", value: 40 },
-  { time: "2時間30分後", value: 35 },
-  { time: "2時間45分後", value: 32 },
-  { time: "3時間後", value: 30 },
-];
+// 現在時刻から15分間隔のデータを生成
+const generateTimeData = () => {
+  const now = new Date();
+  const data = [];
+  
+  for (let i = 0; i <= 12; i++) { // 3時間分（15分×12）
+    const time = new Date(now.getTime() + i * 15 * 60000);
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    const timeString = `${hours}:${minutes}`;
+    
+    // 仮のデータ（本来はAPIから取得）
+    const values = [65, 68, 70, 72, 75, 70, 65, 55, 45, 40, 35, 32, 30];
+    data.push({
+      time: timeString,
+      value: values[i] || 30,
+    });
+  }
+  return data;
+};
+
+const data = generateTimeData();
 
 const OccupancyChart = () => {
   return (
@@ -29,7 +35,7 @@ const OccupancyChart = () => {
             fontSize={10}
             tickLine={false}
             axisLine={false}
-            interval={2}
+            interval={4}  // 1時間おきに表示
             angle={-45}
             textAnchor="end"
             height={60}
