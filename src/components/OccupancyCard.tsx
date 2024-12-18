@@ -33,7 +33,7 @@ const OccupancyCard = ({ time, percentage, isNow = false, forecast }: OccupancyC
       {/* パーセンテージバーの実装 */}
       <div className="w-full bg-gym-text/10 rounded-full h-1.5">
         <div 
-          className={`h-full rounded-full ${getOccupancyColor(percentage)} transition-all duration-300`}
+          className="h-full rounded-full bg-blue-500 transition-all duration-300"
           style={{ width: `${Math.min(Math.max(percentage, 0), 100)}%` }}
         />
       </div>
