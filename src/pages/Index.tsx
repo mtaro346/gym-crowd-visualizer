@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
+import WeeklyHeatmap from "@/components/WeeklyHeatmap";
 
 const Index = () => {
   const currentOccupancy = 65;
@@ -25,8 +26,6 @@ const Index = () => {
     <div className="container max-w-md mx-auto py-4 space-y-4 px-4">
       {/* ロゴ - 後で高解像度の画像に置き換え可能 */}
       <div className="flex justify-center mb-6">
-        {/* TODO: このimg要素は後で高解像度のロゴに置き換えることができます。
-            path、width、heightを適切に更新してください。 */}
         <img 
           src="/logo-placeholder.png" 
           alt="LifeFit" 
@@ -53,6 +52,7 @@ const Index = () => {
       </div>
       
       <OccupancyChart />
+      <WeeklyHeatmap />
     </div>
   );
 };
