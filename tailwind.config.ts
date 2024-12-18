@@ -25,41 +25,34 @@ export default {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          DEFAULT: '#315a8d', // プライマリーカラー
+          light: '#6ab8dd',
+          dark: '#003c7e',
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))'
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))'
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))'
+          DEFAULT: '#909090', // セカンダリーカラー（グレー）
+          light: '#c0c0c0',
+          dark: '#303030',
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))'
+          DEFAULT: '#ef4e3f', // アクセントカラー（赤）
+          light: '#f69a91',
+          dark: '#b23a2f',
         },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))'
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))'
-        },
-        gym: {
-          bg: '#FFFFFF',
-          text: '#000000',
-          accent1: '#FF5733',
-          accent2: '#C70039',
-          button: '#900C3F',
-          link: '#581845',
-          card: 'rgba(0, 0, 0, 0.05)',
+        lifefit: {
+          blue: {
+            100: '#e0f3fb',
+            200: '#dbecf8',
+            300: '#3c78aa',
+            400: '#003c7e',
+          },
+          gray: {
+            100: '#f0f0f0',
+            200: '#c0c0c0',
+            300: '#909090',
+            400: '#606060',
+            500: '#303030',
+          }
         }
       },
       borderRadius: {
