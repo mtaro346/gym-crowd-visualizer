@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Lottie from "react-lottie";
+import animationData from "../../public/animations/Animation - 1734515517907.json";
 import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
 import WeeklyHeatmap from "@/components/WeeklyHeatmap";
@@ -27,15 +29,29 @@ const Index = () => {
       {/* ロゴ - 後で高解像度の画像に置き換え可能 */}
       <div className="flex justify-center mb-6">
         <img 
-          src="/logo-placeholder.png" 
+          src="/images/LifeFit_Logo_Basic_B_C.png" 
           alt="LifeFit" 
-          className="h-8 w-auto"
+          className="h-20 w-auto"
         />
       </div>
       
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-lifefit-blue-400">ジム混雑状況</h1>
-        <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
+        <div className="flex items-center">
+          <Lottie 
+            options={{
+              loop: true,
+              autoplay: true,
+              animationData: animationData,
+              rendererSettings: {
+                preserveAspectRatio: 'xMidYMid slice'
+              }
+            }}
+            height={30}
+            width={30}
+          />
+          <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
+        </div>
       </div>
       
       <OccupancyCard 
