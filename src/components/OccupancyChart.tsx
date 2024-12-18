@@ -1,4 +1,6 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import Lottie from "react-lottie";
+import animationData from "../../public/animations/Animation - 1734516359433.json";
 
 // 現在時刻から15分間隔のデータを生成
 const generateTimeData = () => {
@@ -29,7 +31,21 @@ const data = generateTimeData();
 const OccupancyChart = () => {
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
-      <h3 className="text-sm font-medium text-gym-text/70 mb-4">混雑度の推移</h3>
+      <div className="flex items-center mb-4">
+        <h3 className="text-sm font-medium text-gym-text/70">今後の混雑予想</h3>
+        <Lottie 
+          options={{
+            loop: true,
+            autoplay: true,
+            animationData: animationData,
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid slice'
+            }
+          }}
+          height={40}
+          width={40}
+        />
+      </div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
           <XAxis 
