@@ -9,11 +9,9 @@ interface OccupancyCardProps {
 
 const OccupancyCard = ({ time, percentage, isNow = false, forecast }: OccupancyCardProps) => {
   // 混雑度に応じた色を返す関数
-  // Note: このセクションは後でLottieファイルによるアニメーションに置き換える予定です。
-  // アイコンとgetOccupancyColor関数を置き換えることで、アニメーションを実装できます。
   const getOccupancyColor = (percentage: number) => {
-    if (percentage >= 80) return "text-accent-DEFAULT";
-    if (percentage >= 50) return "text-primary-DEFAULT";
+    if (percentage >= 80) return "text-accent";
+    if (percentage >= 50) return "text-primary";
     return "text-lifefit-blue-300";
   };
 
@@ -28,11 +26,11 @@ const OccupancyCard = ({ time, percentage, isNow = false, forecast }: OccupancyC
         <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
       </div>
       <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-xl font-bold text-primary-DEFAULT">{percentage}%</span>
+        <span className="text-xl font-bold text-primary">{percentage}%</span>
       </div>
-      <div className="w-full bg-lifefit-gray-100 rounded-full h-1.5">
+      <div className="w-full bg-gray-200 rounded-full h-1.5">
         <div 
-          className="h-full rounded-full bg-primary-DEFAULT transition-all duration-300"
+          className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${Math.min(Math.max(percentage, 0), 100)}%` }}
         />
       </div>
