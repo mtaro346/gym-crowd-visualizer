@@ -34,9 +34,12 @@
 
   body {
     @apply bg-gym-bg text-gym-text font-['Inter'];
+    background-color: #FFFFFF;
+    color: #000000;
   }
 
   .glass-card {
-    @apply bg-gym-card backdrop-blur-lg border border-gym-text/10 shadow-lg;
+    @apply backdrop-blur-lg border border-gym-text/10 shadow-lg;
+    background-color: rgba(255, 255, 255, 0.8);
   }
 }

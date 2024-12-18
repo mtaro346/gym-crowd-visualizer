@@ -6,7 +6,7 @@ const Index = () => {
   const forecast = "現在は比較的空いていますが、2時間後から混雑が予想されます";
 
   return (
-    <div className="container max-w-md mx-auto py-4 space-y-4">
+    <div className="container max-w-md mx-auto py-4 space-y-4 px-4">
       <h1 className="text-xl font-bold mb-4">ジム混雑状況</h1>
       
       {/* Current Occupancy */}
@@ -18,7 +18,7 @@ const Index = () => {
       />
       
       {/* Predictions */}
-      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         <OccupancyCard time="1時間後" percentage={75} />
         <OccupancyCard time="2時間後" percentage={45} />
         <OccupancyCard time="3時間後" percentage={30} />
