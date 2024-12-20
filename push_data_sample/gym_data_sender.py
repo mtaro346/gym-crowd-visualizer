@@ -100,32 +100,38 @@ class GymDataSender:
             if not rows:
                 logging.warning("予測用データが見つかりません")
                 return False
-            # データを曜日と時間帯ごとに整理
+            
+            # データを曜日と15分ごとに整理
             forecast_data = {}
             for count, timestamp in rows:
                 dt = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S')
                 day = self.day_translation[dt.strftime('%A')]
-                hour = dt.strftime('%H:%M')
+                quarter_hour = (dt.minute // 15) * 15
+                time_slot = dt.replace(minute=quarter_hour, second=0, microsecond=0).strftime('%H:%M')
+                
                 if day not in forecast_data:
                     forecast_data[day] = {}
-                if hour not in forecast_data[day]:
-                    forecast_data[day][hour] = []
+                if time_slot not in forecast_data[day]:
+                    forecast_data[day][time_slot] = []
                 
-                forecast_data[day][hour].append(count)
+                forecast_data[day][time_slot].append(count)
+            
             # 平均値を計算
             processed_data = []
-            for day, hours in forecast_data.items():
-                hours_data = []
-                for hour, counts in hours.items():
+            for day, time_slots in forecast_data.items():
+                time_slots_data = []
+                for time_slot, counts in time_slots.items():
+                    # 各時間スロットの平均を計算
                     avg_count = round(sum(counts) / len(counts))
-                    hours_data.append({
-                        "hour": hour,
+                    time_slots_data.append({
+                        "hour": time_slot,
                         "occupancy": avg_count
                     })
                 processed_data.append({
                     "day": day,
-                    "hours": sorted(hours_data, key=lambda x: x["hour"])
+                    "hours": sorted(time_slots_data, key=lambda x: x["hour"])
                 })
+            
             # APIにデータを送信
             payload = {
                 'forecast_data': {
@@ -133,7 +139,6 @@ class GymDataSender:
                 }
             }
             logging.info(f"Sending forecast data: {json.dumps(payload, ensure_ascii=False, indent=2)}")
-            logging.info(f"Processed forecast data: {json.dumps(processed_data, ensure_ascii=False, indent=2)}")
             response = requests.post(
                 f'{self.base_url}/forecast',
                 headers=self.headers,
