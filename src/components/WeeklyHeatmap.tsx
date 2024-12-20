@@ -67,7 +67,7 @@ const WeeklyHeatmap = () => {
           <h3 className="text-sm font-medium text-gym-text/70">週間の混雑状況</h3>
           {selectedTile && (
             <span className="text-sm text-primary-DEFAULT">
-              {dayNames[selectedTile.day]} {selectedTile.hour} ({(selectedTile.occupancy / 9) * 100}%)
+              {dayNames[selectedTile.day]} {selectedTile.hour} ({Math.round((selectedTile.occupancy / 9) * 100)}%)
             </span>
           )}
         </div>
