@@ -78,11 +78,20 @@ const Index = () => {
     const loadData = async () => {
       const data = await fetchWeeklyData();
       const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+      console.log('Today:', today);  // 今日の曜日
+      
       const todayData = data[today] || {};
+      console.log('Today\'s data:', todayData);  // その日のデータ全体
 
       const futureData = [1, 2, 3].map(offset => {
         const result = getFutureOccupancy(todayData, offset);
-        console.log(`${offset}時間後:`, result);  // デバッグ用
+        const now = new Date();
+        const futureTime = new Date(now.getTime() + offset * 60 * 60000);
+        console.log(`${offset}時間後 (${futureTime.getHours()}:${futureTime.getMinutes()}):`, {
+          timeString: `${futureTime.getHours().toString().padStart(2, '0')}:${futureTime.getMinutes().toString().padStart(2, '0')}`,
+          result,
+          rawData: todayData
+        });
         return result;
       });
       setFutureOccupancies(futureData);
