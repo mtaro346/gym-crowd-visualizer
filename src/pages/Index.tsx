@@ -26,6 +26,9 @@ const getFutureOccupancy = (data: any, offsetHours: number) => {
   const hours = futureTime.getHours().toString().padStart(2, '0');
   const minutes = futureTime.getMinutes().toString().padStart(2, '0');
   const timeString = `${hours}:${minutes}`;
+
+  console.log(`Calculating occupancy for time: ${timeString}`);
+
   return Math.round((Number(data[timeString] || 0) / 9) * 100);
 };
 
