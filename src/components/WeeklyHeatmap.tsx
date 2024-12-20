@@ -25,6 +25,16 @@ const getOccupancyColor = (occupancy: number) => {
   return 'bg-[#ffcccc] hover:bg-[#ffe6e6]';
 };
 
+const dayNames = {
+  sunday: '日曜日',
+  monday: '月曜日',
+  tuesday: '火曜日',
+  wednesday: '水曜日',
+  thursday: '木曜日',
+  friday: '金曜日',
+  saturday: '土曜日',
+};
+
 const WeeklyHeatmap = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [selectedTile, setSelectedTile] = useState<{
@@ -57,7 +67,7 @@ const WeeklyHeatmap = () => {
           <h3 className="text-sm font-medium text-gym-text/70">週間の混雑状況</h3>
           {selectedTile && (
             <span className="text-sm text-primary-DEFAULT">
-              {selectedTile.day} {selectedTile.hour} ({selectedTile.occupancy}%)
+              {dayNames[selectedTile.day]} {selectedTile.hour} ({(selectedTile.occupancy / 9) * 100}%)
             </span>
           )}
         </div>
@@ -97,7 +107,7 @@ const WeeklyHeatmap = () => {
                 {weeklyData.map((dayData) => (
                   <React.Fragment key={dayData.day}>
                     <div className="text-sm text-gym-text/70 pr-2 flex items-center">
-                      {dayData.day}
+                      {dayNames[dayData.day]}
                     </div>
                     {dayData.hours.map((hourData, index) => (
                       <div
@@ -105,7 +115,7 @@ const WeeklyHeatmap = () => {
                         className={`h-6 transition-colors cursor-pointer ${getOccupancyColor(
                           hourData.occupancy
                         )}`}
-                        title={`${dayData.day} ${hourData.hour}: ${hourData.occupancy}%`}
+                        title={`${dayNames[dayData.day]} ${hourData.hour}: ${hourData.occupancy}%`}
                         onClick={() => setSelectedTile({
                           day: dayData.day,
                           hour: hourData.hour,
