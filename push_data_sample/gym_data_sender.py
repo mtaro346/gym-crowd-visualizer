@@ -23,15 +23,15 @@ class GymDataSender:
             'Content-Type': 'application/json'
         }
         
-        # 日本語の曜日マッピング
+        # 英語の曜日名を使用するように変更
         self.day_translation = {
-            'Monday': '月曜日',
-            'Tuesday': '火曜日',
-            'Wednesday': '水曜日',
-            'Thursday': '木曜日',
-            'Friday': '金曜日',
-            'Saturday': '土曜日',
-            'Sunday': '日曜日'
+            'Monday': 'Monday',
+            'Tuesday': 'Tuesday',
+            'Wednesday': 'Wednesday',
+            'Thursday': 'Thursday',
+            'Friday': 'Friday',
+            'Saturday': 'Saturday',
+            'Sunday': 'Sunday'
         }
     
     def connect_db(self):
