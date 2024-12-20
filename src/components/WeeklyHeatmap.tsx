@@ -16,11 +16,13 @@ const fetchWeeklyData = async () => {
   }
 };
 
-const getOccupancyColor = (percentage: number) => {
-  if (percentage >= 80) return 'bg-accent hover:bg-accent-light';
-  if (percentage >= 60) return 'bg-primary hover:bg-primary-light';
-  if (percentage >= 40) return 'bg-lifefit-blue-200 hover:bg-lifefit-blue-100';
-  return 'bg-lifefit-gray-100 hover:bg-lifefit-gray-200';
+const getOccupancyColor = (occupancy: number) => {
+  const percentage = (occupancy / 9) * 100; // 9を100%として計算
+  if (percentage > 80) return 'bg-[#ff0000] hover:bg-[#ff1a1a]';
+  if (percentage > 60) return 'bg-[#ff3333] hover:bg-[#ff4d4d]';  
+  if (percentage > 40) return 'bg-[#ff6666] hover:bg-[#ff8080]';
+  if (percentage > 20) return 'bg-[#ff9999] hover:bg-[#ffb3b3]';
+  return 'bg-[#ffcccc] hover:bg-[#ffe6e6]';
 };
 
 const WeeklyHeatmap = () => {
