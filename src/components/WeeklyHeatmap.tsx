@@ -17,12 +17,19 @@ const fetchWeeklyData = async () => {
 };
 
 const getOccupancyColor = (occupancy: number) => {
-  const percentage = (occupancy / 9) * 100; // 9を100%として計算
-  if (percentage > 80) return 'bg-[#ff0000] hover:bg-[#ff1a1a]';
-  if (percentage > 60) return 'bg-[#ff3333] hover:bg-[#ff4d4d]';  
-  if (percentage > 40) return 'bg-[#ff6666] hover:bg-[#ff8080]';
-  if (percentage > 20) return 'bg-[#ff9999] hover:bg-[#ffb3b3]';
-  return 'bg-[#ffcccc] hover:bg-[#ffe6e6]';
+  switch (occupancy) {
+    case 9: return 'bg-[#ff0000] hover:bg-[#ff1a1a]';  // 100%
+    case 8: return 'bg-[#ff1a1a] hover:bg-[#ff3333]';  // 89%
+    case 7: return 'bg-[#ff3333] hover:bg-[#ff4d4d]';  // 78%
+    case 6: return 'bg-[#ff4d4d] hover:bg-[#ff6666]';  // 67%
+    case 5: return 'bg-[#ff6666] hover:bg-[#ff8080]';  // 56%
+    case 4: return 'bg-[#ff8080] hover:bg-[#ff9999]';  // 44%
+    case 3: return 'bg-[#ff9999] hover:bg-[#ffb3b3]';  // 33%
+    case 2: return 'bg-[#ffb3b3] hover:bg-[#ffcccc]';  // 22%
+    case 1: return 'bg-[#ffcccc] hover:bg-[#ffe6e6]';  // 11%
+    case 0: return 'bg-[#ffe6e6] hover:bg-[#ffffff]';  // 0%
+    default: return 'bg-[#ffe6e6] hover:bg-[#ffffff]';
+  }
 };
 
 const dayNames = {

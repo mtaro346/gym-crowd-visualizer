@@ -22,6 +22,8 @@ class GymDataSender:
         self.headers = {
             'Content-Type': 'application/json'
         }
+        self.last_posted_timestamp = None
+        self.current_date = datetime.now().date()
         
         # 英語の曜日名を使用するように変更
         self.day_translation = {
@@ -60,20 +62,25 @@ class GymDataSender:
                 logging.warning("現在のデータが見つかりません")
                 return False
             count, last_updated = row
-            payload = {
-                'count': count,
-                'last_updated': last_updated
-            }
-            response = requests.post(
-                f'{self.base_url}/people',
-                headers=self.headers,
-                json=payload
-            )
-            if response.status_code == 200:
-                logging.info(f"現在の人数を送信成功: {count}人")
-                return True
+            if last_updated != self.last_posted_timestamp:
+                payload = {
+                    'count': count,
+                    'last_updated': last_updated
+                }
+                response = requests.post(
+                    f'{self.base_url}/people',
+                    headers=self.headers,
+                    json=payload
+                )
+                if response.status_code == 200:
+                    logging.info(f"現在の人数を送信成功: {count}人")
+                    self.last_posted_timestamp = last_updated
+                    return True
+                else:
+                    logging.error(f"API エラー: {response.status_code} - {response.text}")
+                    return False
             else:
-                logging.error(f"API エラー: {response.status_code} - {response.text}")
+                logging.info(f"{datetime.now()} - 最新情報がなく、ポストしませんでした。")
                 return False
         except Exception as e:
             logging.error(f"エラー発生: {e}")
@@ -134,25 +141,14 @@ class GymDataSender:
             
             # ペイロードの構造を修正
             payload = {
-                'data': processed_data  # forecast_data のラッピングを削除
+                'data': processed_data
             }
-            
-            # デバッグ用のログ出力を追加
-            logging.info(f"送信するデータの構造確認:")
-            logging.info(f"- processed_data の長さ: {len(processed_data)}")
-            if processed_data:
-                logging.info(f"- サンプルデータ（最初の日）: {json.dumps(processed_data[0], ensure_ascii=False, indent=2)}")
             
             response = requests.post(
                 f'{self.base_url}/forecast',
                 headers=self.headers,
                 json=payload
             )
-            
-            # レスポンスの詳細なログ
-            logging.info(f"APIレスポンス ステータスコード: {response.status_code}")
-            logging.info(f"APIレスポンス ヘッダー: {dict(response.headers)}")
-            logging.info(f"APIレスポンス ボディ: {response.text}")
             
             if response.status_code == 200:
                 logging.info("予測データを送信成功")
@@ -173,16 +169,21 @@ def main():
         try:
             # 現在の人数を送信
             sender.send_current_count()
-            # 予測データを送信
-            sender.send_forecast_data()
-            # 10秒待機
-            time.sleep(10)
+            
+            # 日付が変わったかどうかをチェック
+            new_date = datetime.now().date()
+            if new_date != sender.current_date:
+                sender.send_forecast_data()
+                sender.current_date = new_date
+            
+            # 20秒待機
+            time.sleep(20)
         except KeyboardInterrupt:
             logging.info("プログラムを終了します")
             break
         except Exception as e:
             logging.error(f"予期せぬエラー: {e}")
-            time.sleep(10)
+            time.sleep(20)
 
 if __name__ == "__main__":
     main()
