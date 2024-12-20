@@ -100,9 +100,9 @@ const Index = () => {
       />
       
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <OccupancyCard time="1時間後" />
-        <OccupancyCard time="2時間後" />
-        <OccupancyCard time="3時間後" />
+        {futureOccupancies.map((occupancy, index) => (
+          <OccupancyCard key={index} time={`${index + 1}時間後`} percentage={occupancy} />
+        ))}
       </div>
       
       <OccupancyChart />

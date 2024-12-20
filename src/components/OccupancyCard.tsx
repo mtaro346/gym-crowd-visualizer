@@ -1,47 +1,39 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Users } from "lucide-react";
 
-const fetchWeeklyData = async () => {
-  try {
-    const response = await fetch('/api/forecast');
-    if (!response.ok) {
-      throw new Error('データの取得に失敗しました');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('データ取得エラー:', error);
-    return {};
-  }
-};
+interface OccupancyCardProps {
+  time: string;
+  isNow?: boolean;
+  forecast?: string;
+}
 
-const getFutureOccupancy = (data: any, offsetHours: number) => {
-  const now = new Date();
-  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
-  const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
-  const hours = futureTime.getHours().toString().padStart(2, '0');
-  const minutes = futureTime.getMinutes().toString().padStart(2, '0');
-  const timeString = `${hours}:${minutes}`;
-  return Math.round((Number(data[timeString] || 0) / 9) * 100);
-};
-
-const OccupancyCard = ({ time, isNow = false, forecast }: { time: string, isNow?: boolean, forecast?: string }) => {
+const OccupancyCard = ({ time, isNow = false, forecast }: OccupancyCardProps) => {
   const [percentage, setPercentage] = useState(0);
 
+  // APIから人数データを取得し、混雑率を計算
   useEffect(() => {
-    const loadData = async () => {
-      const data = await fetchWeeklyData();
-      const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      const todayData = data[today] || {};
-
-      const offset = parseInt(time);
-      if (!isNaN(offset)) {
-        const occupancy = getFutureOccupancy(todayData, offset);
-        setPercentage(occupancy);
+    const fetchOccupancyData = async () => {
+      try {
+        const response = await fetch('/api/people');
+        if (!response.ok) {
+          throw new Error('データの取得に失敗しました');
+        }
+        const data = await response.json();
+        const count = data.count || 0;
+        setPercentage((count / 9) * 100); // 9人を100%とする
+      } catch (error) {
+        console.error('データ取得エラー:', error);
       }
     };
+    fetchOccupancyData();
+  }, []);
 
-    loadData();
-  }, [time]);
+  // 混雑度に応じた色を返す関数
+  const getOccupancyColor = (percentage: number) => {
+    if (percentage >= 80) return "text-accent";
+    if (percentage >= 50) return "text-primary";
+    return "text-lifefit-blue-300";
+  };
 
   return (
     <div className={`glass-card rounded-xl p-3 ${isNow ? 'w-full' : 'min-w-[100px]'} animate-fade-in`}>
@@ -50,6 +42,8 @@ const OccupancyCard = ({ time, isNow = false, forecast }: { time: string, isNow?
       )}
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-medium text-lifefit-gray-400">{time}</span>
+        {/* このアイコンは後でLottieファイルに置き換える予定です */}
+        <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
       </div>
       <div className="flex items-baseline gap-1 mb-2">
         <span className="text-xl font-bold text-primary">{percentage.toFixed(1)}%</span>
