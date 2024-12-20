@@ -8,7 +8,11 @@ import logging
 # ロギングの設定
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("gym_data_sender.log", encoding='utf-8'),
+        logging.StreamHandler()
+    ]
 )
 
 class GymDataSender:
@@ -124,9 +128,12 @@ class GymDataSender:
                 })
             # APIにデータを送信
             payload = {
-                'forecast_data': processed_data
+                'forecast_data': {
+                    'data': processed_data
+                }
             }
             logging.info(f"Sending forecast data: {json.dumps(payload, ensure_ascii=False, indent=2)}")
+            logging.info(f"Processed forecast data: {json.dumps(processed_data, ensure_ascii=False, indent=2)}")
             response = requests.post(
                 f'{self.base_url}/forecast',
                 headers=self.headers,

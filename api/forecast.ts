@@ -10,6 +10,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     const { forecast_data } = req.body;
 
+    console.log('Received forecast_data:', forecast_data);
+
     if (!forecast_data || typeof forecast_data !== 'object') {
       return res.status(400).json({ message: '無効なデータ形式です' });
     }
