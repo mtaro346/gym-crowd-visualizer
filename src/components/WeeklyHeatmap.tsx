@@ -35,7 +35,15 @@ const WeeklyHeatmap = () => {
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchWeeklyData();
-      setWeeklyData(data);
+      // データを配列形式に変換
+      const formattedData = Object.entries(data).map(([day, hours]) => ({
+        day,
+        hours: Object.entries(hours).map(([hour, occupancy]) => ({
+          hour,
+          occupancy
+        }))
+      }));
+      setWeeklyData(formattedData);
     };
     loadData();
   }, []);
