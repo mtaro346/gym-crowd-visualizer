@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
+import { useWeeklyData } from '@/contexts/WeeklyDataContext';
 
 // APIから週間データを取得する関数
 const fetchWeeklyData = async () => {
@@ -49,12 +50,14 @@ const WeeklyHeatmap = () => {
     hour: string;
     occupancy: number;
   } | null>(null);
-  const [weeklyData, setWeeklyData] = useState([]);
+  const { setWeeklyData } = useWeeklyData();
 
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchWeeklyData();
-      // データを配列形式に変換
+      setWeeklyData(data); // 生のデータをコンテキストに保存
+      
+      // 既存の配列形式への変換はそのまま
       const formattedData = Object.entries(data).map(([day, hours]) => ({
         day,
         hours: Object.entries(hours).map(([hour, occupancy]) => ({
@@ -65,7 +68,7 @@ const WeeklyHeatmap = () => {
       setWeeklyData(formattedData);
     };
     loadData();
-  }, []);
+  }, [setWeeklyData]);
 
   return (
     <div className="glass-card rounded-xl p-4 mt-4 animate-fade-in">
@@ -111,7 +114,7 @@ const WeeklyHeatmap = () => {
                 ))}
 
                 {/* 曜日ごとのデータ */}
-                {weeklyData.map((dayData) => (
+                {setWeeklyData.map((dayData) => (
                   <React.Fragment key={dayData.day}>
                     <div className="text-sm text-gym-text/70 pr-2 flex items-center">
                       {dayNames[dayData.day]}

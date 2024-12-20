@@ -4,6 +4,7 @@ import animationData from "../../public/animations/Animation - 1734515517907.jso
 import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
 import WeeklyHeatmap from "@/components/WeeklyHeatmap";
+import { WeeklyDataProvider, useWeeklyData } from '@/contexts/WeeklyDataContext';
 
 const fetchWeeklyData = async () => {
   try {
@@ -19,68 +20,45 @@ const fetchWeeklyData = async () => {
   }
 };
 
-const fetchHeatmapData = async () => {
-  try {
-    const response = await fetch('/api/heatmap');
-    if (!response.ok) {
-      throw new Error('ヒートマップデータの取得に失敗しました');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('ヒートマップデータ取得エラー:', error);
-    return {};
-  }
+const getFutureOccupancy = (data: any, offsetHours: number) => {
+  const now = new Date();
+  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
+  const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
+  const hours = futureTime.getHours().toString().padStart(2, '0');
+  const minutes = futureTime.getMinutes().toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
+  return Math.round((Number(data[timeString] || 0) / 9) * 100);
 };
 
-const Index = () => {
-  const currentOccupancy = 65;
-  const forecast = "混雑回避のご協力をお願い致します。";
-  const [currentTime, setCurrentTime] = useState("");
+const IndexContent = () => {
+  const { weeklyData } = useWeeklyData();
   const [futureOccupancies, setFutureOccupancies] = useState<number[]>([]);
 
   useEffect(() => {
-    const updateTime = () => {
+    const calculateFutureOccupancies = () => {
       const now = new Date();
-      const hours = now.getHours().toString().padStart(2, '0');
-      const minutes = now.getMinutes().toString().padStart(2, '0');
-      setCurrentTime(`${hours}:${minutes}`);
-    };
+      const dayName = now.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+      const todayData = weeklyData[dayName];
 
-    updateTime();
-    const timer = setInterval(updateTime, 60000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const weeklyData = await fetchWeeklyData();
-      console.log('Fetched weekly data:', weeklyData);
-
-      const heatmapData = await fetchHeatmapData();
-      console.log('Fetched heatmap data:', heatmapData);
-
-      const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      const todayData = weeklyData[today] || {};
-      console.log(`Data for today (${today}):`, todayData);
+      if (!todayData) return;
 
       const futureData = [1, 2, 3].map(offset => {
-        const futureTime = new Date();
-        futureTime.setHours(futureTime.getHours() + offset);
-        const futureHours = futureTime.getHours().toString().padStart(2, '0');
-        const futureMinutes = futureTime.getMinutes().toString().padStart(2, '0');
-        const futureTimeString = `${futureHours}:${futureMinutes}`;
-
-        const occupancy = Math.round((Number(heatmapData[today][futureTimeString] || 0) / 9) * 100);
-        return occupancy;
+        const futureTime = new Date(now.getTime() + offset * 60 * 60000);
+        const hours = futureTime.getHours().toString().padStart(2, '0');
+        const minutes = Math.floor(futureTime.getMinutes() / 15) * 15;
+        const timeString = `${hours}:${minutes.toString().padStart(2, '0')}`;
+        
+        const occupancy = todayData[timeString] || 0;
+        return Math.round((occupancy / 9) * 100);
       });
 
       setFutureOccupancies(futureData);
     };
 
-    loadData();
-  }, []);
+    if (Object.keys(weeklyData).length > 0) {
+      calculateFutureOccupancies();
+    }
+  }, [weeklyData]);
 
   return (
     <div className="container max-w-md mx-auto py-4 space-y-4 px-4">
@@ -128,6 +106,14 @@ const Index = () => {
       <OccupancyChart />
       <WeeklyHeatmap />
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <WeeklyDataProvider>
+      <IndexContent />
+    </WeeklyDataProvider>
   );
 };
 
