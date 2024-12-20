@@ -8,10 +8,19 @@ const redis = new Redis({
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
+    console.log('受信したリクエストボディ:', JSON.stringify(req.body, null, 2));
     const { forecast_data } = req.body;
+
+    console.log('forecast_data の中身:', JSON.stringify(forecast_data, null, 2));
+    console.log('forecast_data の型:', typeof forecast_data);
+    console.log('forecast_data.data は配列?:', Array.isArray(forecast_data?.data));
 
     // データ構造の詳細なバリデーションを追加
     if (!forecast_data || !forecast_data.data || !Array.isArray(forecast_data.data)) {
+        console.log('バリデーションエラーの詳細:');
+        console.log('- forecast_data exists:', !!forecast_data);
+        console.log('- forecast_data.data exists:', !!forecast_data?.data);
+        console.log('- forecast_data.data is array:', Array.isArray(forecast_data?.data));
         return res.status(400).json({ message: 'Invalid data format' });
     }
 

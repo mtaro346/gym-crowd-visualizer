@@ -138,12 +138,24 @@ class GymDataSender:
                     'data': processed_data
                 }
             }
-            logging.info(f"Sending forecast data: {json.dumps(payload, ensure_ascii=False, indent=2)}")
+            
+            # 送信前のデータを詳細にログ出力
+            logging.info("送信するペイロード構造:")
+            logging.info(f"- タイプ: {type(payload)}")
+            logging.info(f"- forecast_data タイプ: {type(payload['forecast_data'])}")
+            logging.info(f"- data タイプ: {type(payload['forecast_data']['data'])}")
+            logging.info(f"送信するデータ: {json.dumps(payload, ensure_ascii=False, indent=2)}")
+
             response = requests.post(
                 f'{self.base_url}/forecast',
                 headers=self.headers,
                 json=payload
             )
+
+            # レスポンスの詳細をログ出力
+            logging.info(f"APIレスポンス ステータス: {response.status_code}")
+            logging.info(f"APIレスポンス ボディ: {response.text}")
+
             if response.status_code == 200:
                 logging.info("予測データを送信成功")
                 return True
