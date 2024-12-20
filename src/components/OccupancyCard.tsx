@@ -1,13 +1,33 @@
+import { useEffect, useState } from 'react';
 import { Users } from "lucide-react";
 
 interface OccupancyCardProps {
   time: string;
-  percentage: number;
   isNow?: boolean;
   forecast?: string;
 }
 
-const OccupancyCard = ({ time, percentage, isNow = false, forecast }: OccupancyCardProps) => {
+const OccupancyCard = ({ time, isNow = false, forecast }: OccupancyCardProps) => {
+  const [percentage, setPercentage] = useState(0);
+
+  // APIから人数データを取得し、混雑率を計算
+  useEffect(() => {
+    const fetchOccupancyData = async () => {
+      try {
+        const response = await fetch('/api/people');
+        if (!response.ok) {
+          throw new Error('データの取得に失敗しました');
+        }
+        const data = await response.json();
+        const count = data.count || 0;
+        setPercentage((count / 9) * 100); // 9人を100%とする
+      } catch (error) {
+        console.error('データ取得エラー:', error);
+      }
+    };
+    fetchOccupancyData();
+  }, []);
+
   // 混雑度に応じた色を返す関数
   const getOccupancyColor = (percentage: number) => {
     if (percentage >= 80) return "text-accent";
@@ -26,7 +46,7 @@ const OccupancyCard = ({ time, percentage, isNow = false, forecast }: OccupancyC
         <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
       </div>
       <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-xl font-bold text-primary">{percentage}%</span>
+        <span className="text-xl font-bold text-primary">{percentage.toFixed(1)}%</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">
         <div 

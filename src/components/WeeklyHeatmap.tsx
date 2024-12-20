@@ -1,24 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
 
-// 仮のデータ生成関数（後でAPIから取得するデータに置き換え可能）
-const generateWeeklyData = () => {
-  const days = ['月', '火', '水', '木', '金', '土', '日'];
-  const hours = Array.from({ length: 24 * 4 }, (_, i) => {
-    const hour = Math.floor(i / 4);
-    const minute = (i % 4) * 15;
-    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-  });
-  
-  const data = days.map(day => ({
-    day,
-    hours: hours.map(hour => ({
-      hour,
-      occupancy: Math.floor(Math.random() * 100)
-    }))
-  }));
-  
-  return data;
+// APIから週間データを取得する関数
+const fetchWeeklyData = async () => {
+  try {
+    const response = await fetch('/api/forecast');
+    if (!response.ok) {
+      throw new Error('データの取得に失敗しました');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('データ取得エラー:', error);
+    return [];
+  }
 };
 
 const getOccupancyColor = (percentage: number) => {
@@ -35,7 +30,15 @@ const WeeklyHeatmap = () => {
     hour: string;
     occupancy: number;
   } | null>(null);
-  const weeklyData = generateWeeklyData();
+  const [weeklyData, setWeeklyData] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchWeeklyData();
+      setWeeklyData(data);
+    };
+    loadData();
+  }, []);
 
   return (
     <div className="glass-card rounded-xl p-4 mt-4 animate-fade-in">
