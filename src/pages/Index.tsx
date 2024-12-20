@@ -5,13 +5,22 @@ import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
 import WeeklyHeatmap from "@/components/WeeklyHeatmap";
 
-const fetchWeeklyData = async () => {
+// データの型定義
+type DayData = {
+  [timeString: string]: number;
+};
+
+type WeeklyData = {
+  [day: string]: DayData;
+};
+
+const fetchWeeklyData = async (): Promise<WeeklyData> => {
   try {
     const response = await fetch('/api/forecast');
     if (!response.ok) {
       throw new Error('データの取得に失敗しました');
     }
-    const data = await response.json();
+    const data: WeeklyData = await response.json();
     return data;
   } catch (error) {
     console.error('データ取得エラー:', error);
@@ -19,14 +28,24 @@ const fetchWeeklyData = async () => {
   }
 };
 
-const getFutureOccupancy = (data: any, offsetHours: number) => {
+const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const now = new Date();
   now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
   const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
   const hours = futureTime.getHours().toString().padStart(2, '0');
   const minutes = futureTime.getMinutes().toString().padStart(2, '0');
   const timeString = `${hours}:${minutes}`;
-  return Math.round((Number(data[timeString] || 0) / 9) * 100);
+  
+  // 人数を取得（0-9の値）
+  const numberOfPeople = Number(data[timeString] || 0);
+  
+  // パーセンテージに変換
+  const percentage = Math.round((numberOfPeople / 9) * 100);
+  
+  return {
+    numberOfPeople,  // 実際の人数（0-9）
+    percentage      // パーセンテージ（0-100）
+  };
 };
 
 const Index = () => {
