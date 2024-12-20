@@ -1,12 +1,12 @@
-const { NextApiRequest, NextApiResponse } = require('next');
-const { Redis } = require('@upstash/redis');
+import { NextApiRequest, NextApiResponse } from 'next';
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_URL!,
   token: process.env.UPSTASH_REDIS_TOKEN!,
 });
 
-module.exports = async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
       const { data } = req.body;
