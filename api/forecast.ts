@@ -1,12 +1,12 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { Redis } from '@upstash/redis';
+const { NextApiRequest, NextApiResponse } = require('next');
+const { Redis } = require('@upstash/redis');
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_URL!,
   token: process.env.UPSTASH_REDIS_TOKEN!,
 });
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+module.exports = async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const { data } = req.body;
@@ -36,6 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
     } catch (error) {
       console.error('Error processing request:', error);
+      console.error('Error details:', error.message, error.stack);
       return res.status(500).json({ message: '内部サーバーエラー' });
     }
   } else if (req.method === 'GET') {
