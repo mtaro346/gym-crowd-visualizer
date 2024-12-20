@@ -36,15 +36,16 @@ const fetchWeeklyData = async (): Promise<WeeklyData> => {
 
 const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const now = new Date();
-  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
   const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
   
-  // 時間と分を必ず2桁の文字列に変換
+  // 時間を2桁でパディング
   const hours = futureTime.getHours().toString().padStart(2, '0');
-  const minutes = (Math.floor(futureTime.getMinutes() / 15) * 15).toString().padStart(2, '0');
-  const timeString = `${hours}:${minutes}`;
+  // 15分単位に丸める
+  const roundedMinutes = Math.floor(futureTime.getMinutes() / 15) * 15;
+  const minutes = roundedMinutes.toString().padStart(2, '0');
   
-  console.log('Looking for time:', timeString); // デバッグ用
+  const timeString = `${hours}:${minutes}`;
+  console.log('Looking for time:', timeString, 'in data:', Object.keys(data)); // デバッグ用
   
   // 人数を取得（0-9の値）
   const numberOfPeople = Number(data[timeString] || 0);
@@ -54,7 +55,8 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   
   return {
     numberOfPeople,
-    percentage
+    percentage,
+    timeString  // デバッグ用に追加
   };
 };
 
@@ -82,20 +84,14 @@ const Index = () => {
     const loadData = async () => {
       const data = await fetchWeeklyData();
       const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      console.log('Today:', today);  // 今日の曜日
+      console.log('Today:', today);
       
       const todayData = data[today] || {};
-      console.log('Today\'s data:', todayData);  // その日のデータ全体
-
+      console.log('Available times:', Object.keys(todayData).sort()); // 利用可能な時間を表示
+      
       const futureData = [1, 2, 3].map(offset => {
         const result = getFutureOccupancy(todayData, offset);
-        const now = new Date();
-        const futureTime = new Date(now.getTime() + offset * 60 * 60000);
-        console.log(`${offset}時間後 (${futureTime.getHours()}:${futureTime.getMinutes()}):`, {
-          timeString: `${futureTime.getHours().toString().padStart(2, '0')}:${futureTime.getMinutes().toString().padStart(2, '0')}`,
-          result,
-          rawData: todayData
-        });
+        console.log(`${offset}時間後:`, result);
         return result;
       });
       setFutureOccupancies(futureData);
@@ -130,7 +126,7 @@ const Index = () => {
             height={25}
             width={25}
           />
-          <span className="text-sm text-lifefit-gray-400">現在時��: {currentTime}</span>
+          <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
         </div>
       </div>
       
