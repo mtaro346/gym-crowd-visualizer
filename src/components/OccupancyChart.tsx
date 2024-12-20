@@ -28,10 +28,22 @@ const OccupancyChart = () => {
       const today = now.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
       const todayData = data[today] || {};
 
-      const formattedData = Object.entries(todayData).map(([time, occupancy]) => ({
-        time,
-        value: Math.round((Number(occupancy) / 9) * 100), // 9を100%として計算
-      }));
+      // 現在時刻を15分単位に丸める
+      now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
+
+      const formattedData = [];
+      for (let i = 0; i < 12; i++) { // 15分間隔で3時間分
+        const time = new Date(now.getTime() + i * 15 * 60000);
+        const hours = time.getHours().toString().padStart(2, '0');
+        const minutes = time.getMinutes().toString().padStart(2, '0');
+        const timeString = `${hours}:${minutes}`;
+
+        const occupancy = todayData[timeString] || 0;
+        formattedData.push({
+          time: timeString,
+          value: Math.round((Number(occupancy) / 9) * 100),
+        });
+      }
 
       setChartData(formattedData);
     };
