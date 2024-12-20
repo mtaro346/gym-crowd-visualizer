@@ -4,7 +4,6 @@ import animationData from "../../public/animations/Animation - 1734515517907.jso
 import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
 import WeeklyHeatmap from "@/components/WeeklyHeatmap";
-import { WeeklyDataProvider, useWeeklyData } from '@/contexts/WeeklyDataContext';
 
 const fetchWeeklyData = async () => {
   try {
@@ -30,35 +29,38 @@ const getFutureOccupancy = (data: any, offsetHours: number) => {
   return Math.round((Number(data[timeString] || 0) / 9) * 100);
 };
 
-const IndexContent = () => {
-  const { weeklyData } = useWeeklyData();
+const Index = () => {
+  const currentOccupancy = 65;
+  const forecast = "混雑回避のご協力をお願いします";
+  const [currentTime, setCurrentTime] = useState("");
   const [futureOccupancies, setFutureOccupancies] = useState<number[]>([]);
 
   useEffect(() => {
-    const calculateFutureOccupancies = () => {
+    const updateTime = () => {
       const now = new Date();
-      const dayName = now.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      const todayData = weeklyData[dayName];
+      const hours = now.getHours().toString().padStart(2, '0');
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setCurrentTime(`${hours}:${minutes}`);
+    };
 
-      if (!todayData) return;
+    updateTime();
+    const timer = setInterval(updateTime, 60000);
 
-      const futureData = [1, 2, 3].map(offset => {
-        const futureTime = new Date(now.getTime() + offset * 60 * 60000);
-        const hours = futureTime.getHours().toString().padStart(2, '0');
-        const minutes = Math.floor(futureTime.getMinutes() / 15) * 15;
-        const timeString = `${hours}:${minutes.toString().padStart(2, '0')}`;
-        
-        const occupancy = todayData[timeString] || 0;
-        return Math.round((occupancy / 9) * 100);
-      });
+    return () => clearInterval(timer);
+  }, []);
 
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchWeeklyData();
+      const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+      const todayData = data[today] || {};
+
+      const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
       setFutureOccupancies(futureData);
     };
 
-    if (Object.keys(weeklyData).length > 0) {
-      calculateFutureOccupancies();
-    }
-  }, [weeklyData]);
+    loadData();
+  }, []);
 
   return (
     <div className="container max-w-md mx-auto py-4 space-y-4 px-4">
@@ -106,14 +108,6 @@ const IndexContent = () => {
       <OccupancyChart />
       <WeeklyHeatmap />
     </div>
-  );
-};
-
-const Index = () => {
-  return (
-    <WeeklyDataProvider>
-      <IndexContent />
-    </WeeklyDataProvider>
   );
 };
 
