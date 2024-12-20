@@ -42,34 +42,49 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const hours = futureTime.getHours().toString().padStart(2, '0');
   // 15分単位に丸める（切り上げ）
   const roundedMinutes = Math.ceil(futureTime.getMinutes() / 15) * 15;
-  // 60分になった場合は0分にする
-  const minutes = (roundedMinutes === 60 ? 0 : roundedMinutes).toString().padStart(2, '0');
-  
-  const timeString = `${hours}:${minutes}`;
-  
-  // データの値を直接確認
-  console.log('Looking for time:', timeString);
-  console.log('Raw data:', data);
-  console.log('Available times:', Object.keys(data));
-  console.log('Value found:', data[timeString]);
-  
-  // 人数を取得（0-9の値）
-  const numberOfPeople = Number(data[timeString]);
-  if (isNaN(numberOfPeople)) {
-    console.warn(`Invalid data for time ${timeString}`);
+  // 60分になった場合は次の時間の0分にする
+  if (roundedMinutes === 60) {
+    const nextHour = (futureTime.getHours() + 1).toString().padStart(2, '0');
+    const timeString = `${nextHour}:00`;
+    console.log('Adjusted to next hour:', timeString);
+    
+    // データの値を直接確認
+    console.log('Data sample:', {
+      previous: data[`${hours}:45`],
+      current: data[timeString],
+      next: data[`${nextHour}:15`]
+    });
+    
+    const numberOfPeople = Number(data[timeString]) || 0;
     return {
-      numberOfPeople: 0,
-      percentage: 0,
+      numberOfPeople,
+      percentage: Math.round((numberOfPeople / 9) * 100),
       timeString
     };
   }
   
-  // パーセンテージに変換
-  const percentage = Math.round((numberOfPeople / 9) * 100);
+  const minutes = roundedMinutes.toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
   
+  // 前後の時間のデータも確認
+  const prevTime = `${hours}:${(roundedMinutes - 15).toString().padStart(2, '0')}`;
+  const nextTime = `${hours}:${(roundedMinutes + 15 === 60 ? '00' : (roundedMinutes + 15).toString().padStart(2, '0'))}`;
+  
+  console.log('Time check:', {
+    looking_for: timeString,
+    previous: prevTime,
+    next: nextTime,
+    values: {
+      prev: data[prevTime],
+      current: data[timeString],
+      next: data[nextTime]
+    }
+  });
+  
+  const numberOfPeople = Number(data[timeString]) || 0;
   return {
     numberOfPeople,
-    percentage,
+    percentage: Math.round((numberOfPeople / 9) * 100),
     timeString
   };
 };
@@ -98,17 +113,21 @@ const Index = () => {
     const loadData = async () => {
       try {
         const data = await fetchWeeklyData();
-        console.log('Raw API response:', data); // APIレスポンス全体を確認
-        
         const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-        console.log('Current day:', today);
-        
         const todayData = data[today] || {};
-        console.log('Today\'s data:', todayData);
         
-        const futureData = [1, 2, 3].map(offset => {
-          return getFutureOccupancy(todayData, offset);
+        // データの詳細を確認
+        console.log('Data check:', {
+          allDays: Object.keys(data),
+          todayTimes: Object.keys(todayData).sort(),
+          sampleValues: {
+            morning: todayData['09:00'],
+            noon: todayData['12:00'],
+            evening: todayData['18:00']
+          }
         });
+        
+        const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
         setFutureOccupancies(futureData);
       } catch (error) {
         console.error('データ読み込みエラー:', error);
@@ -117,9 +136,7 @@ const Index = () => {
     };
 
     loadData();
-    // 定期的なデータ更新
-    const interval = setInterval(loadData, 5 * 60 * 1000); // 5分ごとに更新
-    
+    const interval = setInterval(loadData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -149,7 +166,7 @@ const Index = () => {
             height={25}
             width={25}
           />
-          <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
+          <span className="text-sm text-lifefit-gray-400">現時刻: {currentTime}</span>
         </div>
       </div>
       
