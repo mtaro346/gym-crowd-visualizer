@@ -40,18 +40,29 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   
   // 時間を2桁でパディング
   const hours = futureTime.getHours().toString().padStart(2, '0');
-  // 15分単位に丸める
-  const roundedMinutes = Math.floor(futureTime.getMinutes() / 15) * 15;
-  const minutes = roundedMinutes.toString().padStart(2, '0');
+  // 15分単位に丸める（切り上げ）
+  const roundedMinutes = Math.ceil(futureTime.getMinutes() / 15) * 15;
+  // 60分になった場合は0分にする
+  const minutes = (roundedMinutes === 60 ? 0 : roundedMinutes).toString().padStart(2, '0');
   
   const timeString = `${hours}:${minutes}`;
   
   // データの値を直接確認
   console.log('Looking for time:', timeString);
-  console.log('Value in data:', data[timeString]);
+  console.log('Raw data:', data);
+  console.log('Available times:', Object.keys(data));
+  console.log('Value found:', data[timeString]);
   
   // 人数を取得（0-9の値）
-  const numberOfPeople = Number(data[timeString] || 0);
+  const numberOfPeople = Number(data[timeString]);
+  if (isNaN(numberOfPeople)) {
+    console.warn(`Invalid data for time ${timeString}`);
+    return {
+      numberOfPeople: 0,
+      percentage: 0,
+      timeString
+    };
+  }
   
   // パーセンテージに変換
   const percentage = Math.round((numberOfPeople / 9) * 100);
@@ -87,20 +98,16 @@ const Index = () => {
     const loadData = async () => {
       try {
         const data = await fetchWeeklyData();
+        console.log('Raw API response:', data); // APIレスポンス全体を確認
+        
         const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+        console.log('Current day:', today);
         
         const todayData = data[today] || {};
-        // 具体的な値を確認
-        console.log('Sample data values:', {
-          '00:00': todayData['00:00'],
-          '00:15': todayData['00:15'],
-          '04:00': todayData['04:00'],
-          '04:15': todayData['04:15']
-        });
+        console.log('Today\'s data:', todayData);
         
         const futureData = [1, 2, 3].map(offset => {
-          const result = getFutureOccupancy(todayData, offset);
-          return result;
+          return getFutureOccupancy(todayData, offset);
         });
         setFutureOccupancies(futureData);
       } catch (error) {
