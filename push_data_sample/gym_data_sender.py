@@ -17,7 +17,7 @@ logging.basicConfig(
 
 class GymDataSender:
     def __init__(self):
-        self.base_url = 'https://gym-crowd-visualizer.vercel.app/api'
+        self.base_url = 'https://gym-crowd-visualizer-git-ne-6a18b3-asukaoita-gmailcoms-projects.vercel.app/api'
         self.db_path = 'gym_visitors.db'
         self.headers = {
             'Content-Type': 'application/json'
