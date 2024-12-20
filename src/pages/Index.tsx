@@ -14,6 +14,12 @@ type WeeklyData = {
   [day: string]: DayData;
 };
 
+// 型定義を追加
+type OccupancyData = {
+  numberOfPeople: number;
+  percentage: number;
+};
+
 const fetchWeeklyData = async (): Promise<WeeklyData> => {
   try {
     const response = await fetch('/api/forecast');
@@ -52,7 +58,7 @@ const Index = () => {
   const currentOccupancy = 65;
   const forecast = "混雑回避のご協力をお願いします";
   const [currentTime, setCurrentTime] = useState("");
-  const [futureOccupancies, setFutureOccupancies] = useState<number[]>([]);
+  const [futureOccupancies, setFutureOccupancies] = useState<OccupancyData[]>([]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -74,7 +80,11 @@ const Index = () => {
       const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
       const todayData = data[today] || {};
 
-      const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
+      const futureData = [1, 2, 3].map(offset => {
+        const result = getFutureOccupancy(todayData, offset);
+        console.log(`${offset}時間後:`, result);  // デバッグ用
+        return result;
+      });
       setFutureOccupancies(futureData);
     };
 
@@ -120,7 +130,11 @@ const Index = () => {
       
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {futureOccupancies.map((occupancy, index) => (
-          <OccupancyCard key={index} time={`${index + 1}時間後`} percentage={occupancy} />
+          <OccupancyCard 
+            key={index} 
+            time={`${index + 1}時間後`} 
+            percentage={occupancy.percentage} 
+          />
         ))}
       </div>
       
