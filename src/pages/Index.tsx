@@ -40,48 +40,20 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   
   // 時間を2桁でパディング
   const hours = futureTime.getHours().toString().padStart(2, '0');
-  // 15分単位に丸める（切り上げ）
-  const roundedMinutes = Math.ceil(futureTime.getMinutes() / 15) * 15;
-  // 60分になった場合は次の時間の0分にする
-  if (roundedMinutes === 60) {
-    const nextHour = (futureTime.getHours() + 1).toString().padStart(2, '0');
-    const timeString = `${nextHour}:00`;
-    console.log('Adjusted to next hour:', timeString);
-    
-    // データの値を直接確認
-    console.log('Data sample:', {
-      previous: data[`${hours}:45`],
-      current: data[timeString],
-      next: data[`${nextHour}:15`]
-    });
-    
-    const numberOfPeople = Number(data[timeString]) || 0;
-    return {
-      numberOfPeople,
-      percentage: Math.round((numberOfPeople / 9) * 100),
-      timeString
-    };
-  }
-  
+  // 15分単位に丸める（切り捨て）
+  const roundedMinutes = Math.floor(futureTime.getMinutes() / 15) * 15;
   const minutes = roundedMinutes.toString().padStart(2, '0');
   const timeString = `${hours}:${minutes}`;
   
-  // 前後の時間のデータも確認
-  const prevTime = `${hours}:${(roundedMinutes - 15).toString().padStart(2, '0')}`;
-  const nextTime = `${hours}:${(roundedMinutes + 15 === 60 ? '00' : (roundedMinutes + 15).toString().padStart(2, '0'))}`;
+  // その時間帯の値を取得
+  const numberOfPeople = Number(data[timeString]) || 0;
   
-  console.log('Time check:', {
-    looking_for: timeString,
-    previous: prevTime,
-    next: nextTime,
-    values: {
-      prev: data[prevTime],
-      current: data[timeString],
-      next: data[nextTime]
-    }
+  console.log('Occupancy check:', {
+    time: timeString,
+    value: numberOfPeople,
+    percentage: Math.round((numberOfPeople / 9) * 100)
   });
   
-  const numberOfPeople = Number(data[timeString]) || 0;
   return {
     numberOfPeople,
     percentage: Math.round((numberOfPeople / 9) * 100),
