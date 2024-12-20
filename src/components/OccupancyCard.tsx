@@ -38,17 +38,22 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
     return "text-lifefit-blue-300";
   };
 
+  const displayValue = percentage === -1 ? '--' : `${percentage.toFixed(1)}%`;
+  const displayForecast = percentage === -1 ? 'エラーが発生しました' : forecast;
+
   return (
     <div className={`glass-card rounded-xl p-3 ${isNow ? 'w-full' : 'min-w-[100px]'} animate-fade-in`}>
-      {forecast && (
-        <p className="text-sm text-lifefit-gray-400 mb-2">{forecast}</p>
-      )}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-xs font-medium text-lifefit-gray-400">{time}</span>
+        <div>
+          {isNow && forecast && (
+            <p className="text-sm text-lifefit-gray-400 mb-1">{displayForecast}</p>
+          )}
+          <span className="text-xs font-medium text-lifefit-gray-400">{time}</span>
+        </div>
         <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
       </div>
       <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-xl font-bold text-primary">{percentage.toFixed(1)}%</span>
+        <span className="text-xl font-bold text-primary">{displayValue}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">
         <div 

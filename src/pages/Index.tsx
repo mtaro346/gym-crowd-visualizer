@@ -91,9 +91,9 @@ const Index: React.FC = () => {
         setForecast(data.forecast);
       } catch (error) {
         console.error('現在の混雑状況取得エラー:', error);
-        // エラー時はダミーデータを使用
-        setCurrentOccupancy(65);
-        setForecast("混雑回避のご協力をお願いします");
+        // エラー時は -1 を設定
+        setCurrentOccupancy(-1);
+        setForecast("データの取得に失敗しました");
       }
     };
 
@@ -167,7 +167,7 @@ const Index: React.FC = () => {
         percentage={currentOccupancy} 
         time="現在" 
         isNow={true}
-        forecast={forecast}
+        forecast="混雑回避のご協力をお願いします"
       />
       
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
