@@ -1,31 +1,44 @@
+import React, { useEffect, useState } from 'react';
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts";
 import Lottie from "react-lottie";
 import animationData from "../../public/animations/Animation - 1734516359433.json";
 
-const generateTimeData = () => {
-  const now = new Date();
-  const data = [];
-  
-  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
-
-  for (let i = 0; i <= 12; i++) {
-    const time = new Date(now.getTime() + i * 15 * 60000);
-    const hours = time.getHours().toString().padStart(2, '0');
-    const minutes = time.getMinutes().toString().padStart(2, '0');
-    const timeString = `${hours}:${minutes}`;
-    
-    const values = [65, 68, 70, 72, 75, 70, 65, 55, 45, 40, 35, 32, 30];
-    data.push({
-      time: timeString,
-      value: values[i] || 30,
-    });
+// APIから週間データを取得する関数
+const fetchWeeklyData = async () => {
+  try {
+    const response = await fetch('/api/forecast');
+    if (!response.ok) {
+      throw new Error('データの取得に失敗しました');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('データ取得エラー:', error);
+    return {};
   }
-  return data;
 };
 
-const data = generateTimeData();
-
 const OccupancyChart = () => {
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchWeeklyData();
+      const now = new Date();
+      const today = now.toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+      const todayData = data[today] || {};
+
+      const formattedData = Object.entries(todayData).map(([time, occupancy]) => ({
+        time,
+        value: Math.round((Number(occupancy) / 9) * 100), // 9を100%として計算
+      }));
+
+      setChartData(formattedData);
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="glass-card rounded-xl p-4 h-[200px] animate-fade-in">
       <div className="flex items-center gap-1 mb-2">
@@ -46,7 +59,7 @@ const OccupancyChart = () => {
         </div>
       </div>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
+        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
             dataKey="time" 
@@ -66,7 +79,7 @@ const OccupancyChart = () => {
             axisLine={true}
             tickFormatter={(value) => `${value}%`}
             domain={[0, 100]}
-            ticks={[0, 20, 40, 60, 80, 100]} // 明示的にticksを指定
+            ticks={[0, 20, 40, 60, 80, 100]}
           />
           <Tooltip
             contentStyle={{
@@ -75,6 +88,7 @@ const OccupancyChart = () => {
               borderRadius: "8px",
             }}
             labelStyle={{ color: "#000" }}
+            formatter={(value: number) => [`${Math.round(value)}%`, '混雑率']}
           />
           <Line 
             type="monotone" 
@@ -84,9 +98,9 @@ const OccupancyChart = () => {
             dot={{ 
               fill: "#ff6f61", 
               strokeWidth: 2,
-              r: 4, // ドットのサイズを大きく
+              r: 4,
               stroke: "#ff6f61",
-              fillOpacity: 1 // 不透明度を1に設定
+              fillOpacity: 1
             }}
             activeDot={{
               r: 6,
