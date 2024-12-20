@@ -38,9 +38,13 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const now = new Date();
   now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
   const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
+  
+  // 時間と分を必ず2桁の文字列に変換
   const hours = futureTime.getHours().toString().padStart(2, '0');
-  const minutes = futureTime.getMinutes().toString().padStart(2, '0');
+  const minutes = (Math.floor(futureTime.getMinutes() / 15) * 15).toString().padStart(2, '0');
   const timeString = `${hours}:${minutes}`;
+  
+  console.log('Looking for time:', timeString); // デバッグ用
   
   // 人数を取得（0-9の値）
   const numberOfPeople = Number(data[timeString] || 0);
@@ -49,8 +53,8 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const percentage = Math.round((numberOfPeople / 9) * 100);
   
   return {
-    numberOfPeople,  // 実際の人数（0-9）
-    percentage      // パーセンテージ（0-100）
+    numberOfPeople,
+    percentage
   };
 };
 
@@ -126,7 +130,7 @@ const Index = () => {
             height={25}
             width={25}
           />
-          <span className="text-sm text-lifefit-gray-400">現在時刻: {currentTime}</span>
+          <span className="text-sm text-lifefit-gray-400">現在時��: {currentTime}</span>
         </div>
       </div>
       
