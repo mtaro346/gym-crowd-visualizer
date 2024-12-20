@@ -61,8 +61,9 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   };
 };
 
-const Index = () => {
-  const forecast = "混雑回避のご協力をお願いします";
+const Index: React.FC = () => {
+  const [currentOccupancy, setCurrentOccupancy] = useState(0);
+  const [forecast, setForecast] = useState("");
   const [currentTime, setCurrentTime] = useState("");
   const [futureOccupancies, setFutureOccupancies] = useState<OccupancyData[]>([]);
 
@@ -78,6 +79,27 @@ const Index = () => {
     const timer = setInterval(updateTime, 60000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const fetchCurrentOccupancy = async () => {
+      try {
+        const response = await fetch('/api/people');
+        if (!response.ok) throw new Error('現在の混雑状況の取得に失敗しました');
+        const data = await response.json();
+        setCurrentOccupancy(data.occupancy);
+        setForecast(data.forecast);
+      } catch (error) {
+        console.error('現在の混雑状況取得エラー:', error);
+        // エラー時はダミーデータを使用
+        setCurrentOccupancy(65);
+        setForecast("混雑回避のご協力をお願いします");
+      }
+    };
+
+    fetchCurrentOccupancy();
+    const interval = setInterval(fetchCurrentOccupancy, 5 * 60 * 1000); // 5分ごとに更新
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -142,8 +164,8 @@ const Index = () => {
       </div>
       
       <OccupancyCard 
-        time="現在" 
         percentage={currentOccupancy} 
+        time="現在" 
         isNow={true}
         forecast={forecast}
       />
