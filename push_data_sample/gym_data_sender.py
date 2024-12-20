@@ -132,11 +132,9 @@ class GymDataSender:
                     "hours": sorted(time_slots_data, key=lambda x: x["hour"])
                 })
             
-            # ペイロードの構造を単純化
+            # ペイロードの構造を修正
             payload = {
-                'forecast_data': {
-                    'data': processed_data
-                }
+                'data': processed_data  # forecast_data のラッピングを削除
             }
             
             # デバッグ用のログ出力を追加

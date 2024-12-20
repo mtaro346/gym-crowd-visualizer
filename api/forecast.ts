@@ -9,13 +9,16 @@ const redis = new Redis({
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      const { forecast_data } = req.body;
-      
-      if (!forecast_data?.data || !Array.isArray(forecast_data.data)) {
+      const { data } = req.body;
+
+      // 受け取ったデータをログに出力
+      console.log('受け取ったデータ:', JSON.stringify(data, null, 2));
+
+      if (!data || !Array.isArray(data)) {
         return res.status(400).json({ message: 'Invalid data format' });
       }
 
-      const isValidData = forecast_data.data.every(item => 
+      const isValidData = data.every(item => 
         item.day && 
         Array.isArray(item.hours) &&
         item.hours.every(hour => 
@@ -28,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ message: 'Invalid data structure' });
       }
 
-      await redis.set('forecast_data', JSON.stringify(forecast_data));
+      await redis.set('forecast_data', JSON.stringify(data));
       return res.status(200).json({ message: '予測データを正常に保存しました' });
       
     } catch (error) {
