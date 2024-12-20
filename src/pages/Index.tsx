@@ -19,18 +19,18 @@ const fetchWeeklyData = async () => {
   }
 };
 
-const getFutureOccupancy = (data: any, offsetHours: number) => {
-  const now = new Date();
-  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
-  const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
-  const hours = futureTime.getHours().toString().padStart(2, '0');
-  const minutes = futureTime.getMinutes().toString().padStart(2, '0');
-  const timeString = `${hours}:${minutes}`;
-
-  console.log(`Calculating occupancy for time: ${timeString}`);
-  console.log('Data for today:', data);
-
-  return Math.round((Number(data[timeString] || 0) / 9) * 100);
+const fetchHeatmapData = async () => {
+  try {
+    const response = await fetch('/api/heatmap');
+    if (!response.ok) {
+      throw new Error('ヒートマップデータの取得に失敗しました');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('ヒートマップデータ取得エラー:', error);
+    return {};
+  }
 };
 
 const Index = () => {
@@ -55,14 +55,27 @@ const Index = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchWeeklyData();
-      console.log('Fetched weekly data:', data);
+      const weeklyData = await fetchWeeklyData();
+      console.log('Fetched weekly data:', weeklyData);
+
+      const heatmapData = await fetchHeatmapData();
+      console.log('Fetched heatmap data:', heatmapData);
 
       const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      const todayData = data[today] || {};
+      const todayData = weeklyData[today] || {};
       console.log(`Data for today (${today}):`, todayData);
 
-      const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
+      const futureData = [1, 2, 3].map(offset => {
+        const futureTime = new Date();
+        futureTime.setHours(futureTime.getHours() + offset);
+        const futureHours = futureTime.getHours().toString().padStart(2, '0');
+        const futureMinutes = futureTime.getMinutes().toString().padStart(2, '0');
+        const futureTimeString = `${futureHours}:${futureMinutes}`;
+
+        const occupancy = Math.round((Number(heatmapData[today][futureTimeString] || 0) / 9) * 100);
+        return occupancy;
+      });
+
       setFutureOccupancies(futureData);
     };
 
