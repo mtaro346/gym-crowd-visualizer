@@ -132,38 +132,39 @@ class GymDataSender:
                     "hours": sorted(time_slots_data, key=lambda x: x["hour"])
                 })
             
-            # APIにデータを送信
+            # ペイロードの構造を単純化
             payload = {
                 'forecast_data': {
                     'data': processed_data
                 }
             }
             
-            # 送信前のデータを詳細にログ出力
-            logging.info("送信するペイロード構造:")
-            logging.info(f"- タイプ: {type(payload)}")
-            logging.info(f"- forecast_data タイプ: {type(payload['forecast_data'])}")
-            logging.info(f"- data タイプ: {type(payload['forecast_data']['data'])}")
-            logging.info(f"送信するデータ: {json.dumps(payload, ensure_ascii=False, indent=2)}")
-
+            # デバッグ用のログ出力を追加
+            logging.info(f"送信するデータの構造確認:")
+            logging.info(f"- processed_data の長さ: {len(processed_data)}")
+            if processed_data:
+                logging.info(f"- サンプルデータ（最初の日）: {json.dumps(processed_data[0], ensure_ascii=False, indent=2)}")
+            
             response = requests.post(
                 f'{self.base_url}/forecast',
                 headers=self.headers,
                 json=payload
             )
-
-            # レスポンスの詳細をログ出力
-            logging.info(f"APIレスポンス ステータス: {response.status_code}")
+            
+            # レスポンスの詳細なログ
+            logging.info(f"APIレスポンス ステータスコード: {response.status_code}")
+            logging.info(f"APIレスポンス ヘッダー: {dict(response.headers)}")
             logging.info(f"APIレスポンス ボディ: {response.text}")
-
+            
             if response.status_code == 200:
                 logging.info("予測データを送信成功")
                 return True
             else:
                 logging.error(f"予測データAPI エラー: {response.status_code} - {response.text}")
                 return False
+            
         except Exception as e:
-            logging.error(f"予測データ処理エラー: {e}")
+            logging.error(f"予測データ処理エラー: {e}", exc_info=True)
             return False
         finally:
             conn.close()
