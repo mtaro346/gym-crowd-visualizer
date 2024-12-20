@@ -45,15 +45,18 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
     <div className={`glass-card rounded-xl p-3 ${isNow ? 'w-full' : 'min-w-[100px]'} animate-fade-in`}>
       <div className="flex items-center justify-between mb-2">
         <div>
+          {/* 「混雑回避のご協力をお願いします」というメッセージ */}
           {isNow && forecast && (
             <p className="text-sm text-lifefit-gray-400 mb-1">{displayForecast}</p>
           )}
-          <span className="text-xs font-medium text-lifefit-gray-400">{time}</span>
+          {/* 「現在」という文字のサイズ設定 */}
+          <span className="text-base font-medium text-lifefit-gray-400">{time}</span>
         </div>
         <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
       </div>
       <div className="flex items-baseline gap-1 mb-2">
-        <span className="text-xl font-bold text-primary">{displayValue}</span>
+        {/* パーセンテージ（例：65.0%）の文字サイズ設定 */}
+        <span className="text-2xl font-bold text-primary">{displayValue}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">
         <div 
