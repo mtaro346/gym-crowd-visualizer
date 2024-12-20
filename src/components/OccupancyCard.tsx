@@ -47,7 +47,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
         <div>
           {/* 「混雑回避のご協力をお願いします」というメッセージ */}
           {isNow && forecast && (
-            <p className="text-sm text-lifefit-gray-400 mb-1">{displayForecast}</p>
+            <p className="text-base text-lifefit-gray-400 mb-1">{displayForecast}</p>
           )}
           {/* 「現在」は大きく、その他の時間表示は小さく */}
           <span className={`font-medium text-lifefit-gray-400 ${
@@ -59,7 +59,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
       <div className="flex items-baseline gap-1 mb-2">
         {/* 現在の％は特に大きく、その他は通常サイズ */}
         <span className={`font-bold text-primary ${
-          isNow ? 'text-4xl' : 'text-xl'
+          isNow ? 'text-3xl' : 'text-xl'
         }`}>{displayValue}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">

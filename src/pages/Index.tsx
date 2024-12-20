@@ -134,13 +134,13 @@ const Index: React.FC = () => {
   }, []);
 
   return (
-    <div className="container max-w-md mx-auto py-4 space-y-4 px-4">
+    <div className="container max-w-md mx-auto py-2 space-y-4 px-4">
       {/* ロゴ - 後で高解像度の画像に置き換え可能 */}
-      <div className="flex justify-center mb+2">
+      <div className="flex justify-center mb-1">
         <img 
           src="/images/LifeFit_Logo_Basic_B_C.png" 
           alt="LifeFit" 
-          className="h-10 w-auto"
+          className="h-16 w-auto"
         />
       </div>
       
