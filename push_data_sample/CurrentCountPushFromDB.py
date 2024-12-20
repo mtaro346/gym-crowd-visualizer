@@ -8,8 +8,8 @@ import subprocess
 # 不安全なリクエストに関する警告を無視
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# WordPressのカスタムエンドポイントURL
-url = 'https://lifefitnarimasu.com/wp-json/gym/v1/people'
+# 新しいNode.jsエンドポイントURL
+url = 'https://gym-crowd-visualizer.vercel.app/api/people'  # VercelのデプロイURLに合わせて変更
 
 # 認証情報（WordPressのログインIDとアプリケーションパスワード）
 username = 'lifefitnarimasu@gmail.com'
