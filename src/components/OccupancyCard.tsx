@@ -51,7 +51,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
           )}
           {/* 「現在」は大きく、その他の時間表示は小さく */}
           <span className={`font-medium text-lifefit-gray-400 ${
-            isNow ? 'text-base' : 'text-xs'
+            isNow ? 'text-lg' : 'text-base'
           }`}>{time}</span>
         </div>
         <Users className={`w-4 h-4 ${getOccupancyColor(percentage)}`} />
@@ -59,7 +59,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
       <div className="flex items-baseline gap-1 mb-2">
         {/* 現在の％は特に大きく、その他は通常サイズ */}
         <span className={`font-bold text-primary ${
-          isNow ? 'text-3xl' : 'text-xl'
+          isNow ? 'text-4xl' : 'text-xl'
         }`}>{displayValue}</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">
