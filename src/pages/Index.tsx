@@ -45,7 +45,10 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   const minutes = roundedMinutes.toString().padStart(2, '0');
   
   const timeString = `${hours}:${minutes}`;
-  console.log('Looking for time:', timeString, 'in data:', Object.keys(data)); // デバッグ用
+  
+  // データの値を直接確認
+  console.log('Looking for time:', timeString);
+  console.log('Value in data:', data[timeString]);
   
   // 人数を取得（0-9の値）
   const numberOfPeople = Number(data[timeString] || 0);
@@ -56,7 +59,7 @@ const getFutureOccupancy = (data: DayData, offsetHours: number) => {
   return {
     numberOfPeople,
     percentage,
-    timeString  // デバッグ用に追加
+    timeString
   };
 };
 
@@ -82,22 +85,35 @@ const Index = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const data = await fetchWeeklyData();
-      const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
-      console.log('Today:', today);
-      
-      const todayData = data[today] || {};
-      console.log('Available times:', Object.keys(todayData).sort()); // 利用可能な時間を表示
-      
-      const futureData = [1, 2, 3].map(offset => {
-        const result = getFutureOccupancy(todayData, offset);
-        console.log(`${offset}時間後:`, result);
-        return result;
-      });
-      setFutureOccupancies(futureData);
+      try {
+        const data = await fetchWeeklyData();
+        const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+        
+        const todayData = data[today] || {};
+        // 具体的な値を確認
+        console.log('Sample data values:', {
+          '00:00': todayData['00:00'],
+          '00:15': todayData['00:15'],
+          '04:00': todayData['04:00'],
+          '04:15': todayData['04:15']
+        });
+        
+        const futureData = [1, 2, 3].map(offset => {
+          const result = getFutureOccupancy(todayData, offset);
+          return result;
+        });
+        setFutureOccupancies(futureData);
+      } catch (error) {
+        console.error('データ読み込みエラー:', error);
+        setFutureOccupancies([]);
+      }
     };
 
     loadData();
+    // 定期的なデータ更新
+    const interval = setInterval(loadData, 5 * 60 * 1000); // 5分ごとに更新
+    
+    return () => clearInterval(interval);
   }, []);
 
   return (
