@@ -31,7 +31,7 @@ const getFutureOccupancy = (data: any, offsetHours: number) => {
 
 const Index = () => {
   const currentOccupancy = 65;
-  const forecast = "現在は比較的空いていますが、2時間後から混雑が予想されます";
+  const forecast = "混雑回避のご協力をお願い致します。";
   const [currentTime, setCurrentTime] = useState("");
   const [futureOccupancies, setFutureOccupancies] = useState<number[]>([]);
 
