@@ -20,9 +20,7 @@ const fetchWeeklyData = async () => {
 };
 
 const getFutureOccupancy = (data: any, offsetHours: number) => {
-  // デバッグ用に現在時刻を固定
-  const now = new Date('2024-12-20T16:03:00');
-  // const now = new Date(); // 元のコード
+  const now = new Date();
   now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
   const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
   const hours = futureTime.getHours().toString().padStart(2, '0');
