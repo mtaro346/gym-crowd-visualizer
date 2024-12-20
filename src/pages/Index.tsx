@@ -5,10 +5,35 @@ import OccupancyCard from "@/components/OccupancyCard";
 import OccupancyChart from "@/components/OccupancyChart";
 import WeeklyHeatmap from "@/components/WeeklyHeatmap";
 
+const fetchWeeklyData = async () => {
+  try {
+    const response = await fetch('/api/forecast');
+    if (!response.ok) {
+      throw new Error('データの取得に失敗しました');
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('データ取得エラー:', error);
+    return {};
+  }
+};
+
+const getFutureOccupancy = (data: any, offsetHours: number) => {
+  const now = new Date();
+  now.setMinutes(Math.floor(now.getMinutes() / 15) * 15, 0, 0);
+  const futureTime = new Date(now.getTime() + offsetHours * 60 * 60000);
+  const hours = futureTime.getHours().toString().padStart(2, '0');
+  const minutes = futureTime.getMinutes().toString().padStart(2, '0');
+  const timeString = `${hours}:${minutes}`;
+  return Math.round((Number(data[timeString] || 0) / 9) * 100);
+};
+
 const Index = () => {
   const currentOccupancy = 65;
   const forecast = "現在は比較的空いていますが、2時間後から混雑が予想されます";
   const [currentTime, setCurrentTime] = useState("");
+  const [futureOccupancies, setFutureOccupancies] = useState<number[]>([]);
 
   useEffect(() => {
     const updateTime = () => {
@@ -22,6 +47,19 @@ const Index = () => {
     const timer = setInterval(updateTime, 60000);
 
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchWeeklyData();
+      const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
+      const todayData = data[today] || {};
+
+      const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
+      setFutureOccupancies(futureData);
+    };
+
+    loadData();
   }, []);
 
   return (
@@ -62,9 +100,9 @@ const Index = () => {
       />
       
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
-        <OccupancyCard time="1時間後" percentage={75} />
-        <OccupancyCard time="2時間後" percentage={45} />
-        <OccupancyCard time="3時間後" percentage={30} />
+        <OccupancyCard time="1時間後" />
+        <OccupancyCard time="2時間後" />
+        <OccupancyCard time="3時間後" />
       </div>
       
       <OccupancyChart />
