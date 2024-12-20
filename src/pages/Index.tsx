@@ -28,6 +28,7 @@ const getFutureOccupancy = (data: any, offsetHours: number) => {
   const timeString = `${hours}:${minutes}`;
 
   console.log(`Calculating occupancy for time: ${timeString}`);
+  console.log('Data for today:', data);
 
   return Math.round((Number(data[timeString] || 0) / 9) * 100);
 };
@@ -55,8 +56,11 @@ const Index = () => {
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchWeeklyData();
+      console.log('Fetched weekly data:', data);
+
       const today = new Date().toLocaleString('en-US', { weekday: 'long' }).toLowerCase();
       const todayData = data[today] || {};
+      console.log(`Data for today (${today}):`, todayData);
 
       const futureData = [1, 2, 3].map(offset => getFutureOccupancy(todayData, offset));
       setFutureOccupancies(futureData);
