@@ -62,7 +62,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
       <div className="flex items-baseline gap-1 mb-2">
         {/* 現在の％は特に大きく、その他は通常サイズ */}
         <span className={`font-bold text-primary ${
-          isNow ? 'text-3xl' : 'text-xl'
+          isNow ? 'text-3xl' : 'text-lg'
         }`}>{displayValue}</span>
         <span className="text-sm text-lifefit-gray-400">({displayPeople})</span>
       </div>
