@@ -38,7 +38,10 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
     return "text-lifefit-blue-300";
   };
 
+  // 人数を計算（9人を最大値として）
+  const numberOfPeople = percentage === -1 ? '--' : Math.round((percentage / 100) * 9);
   const displayValue = percentage === -1 ? '--' : `${percentage.toFixed(1)}%`;
+  const displayPeople = percentage === -1 ? '--' : `${numberOfPeople}/9人`;
   const displayForecast = percentage === -1 ? 'エラーが発生しました' : forecast;
 
   return (
@@ -61,6 +64,7 @@ const OccupancyCard = ({ time, percentage: predictedPercentage, isNow = false, f
         <span className={`font-bold text-primary ${
           isNow ? 'text-3xl' : 'text-xl'
         }`}>{displayValue}</span>
+        <span className="text-sm text-lifefit-gray-400">({displayPeople})</span>
       </div>
       <div className="w-full bg-gray-200 rounded-full h-1.5">
         <div 
